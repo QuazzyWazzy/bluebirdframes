@@ -18,7 +18,7 @@ You can find more tutorials and open source Twitter bots on [Botwiki](https://bo
 
 ## More starter projects
 
-For more bot starter projects on Glitch, check out the official [Botwiki page on Glitch](https://glitch.com/botwiki).
+For more bot starter projects on Glitch, check out [Botwiki on Glitch](https://glitch.com/botwiki).
 
 ## Support Botwiki/Botmakers
 
