@@ -1,6 +1,5 @@
 /* Setting things up. */
-var path = require('path'),
-    express = require('express'),
+var express = require('express'),
     app = express(),   
     Twit = require('twit'),
     config = {
