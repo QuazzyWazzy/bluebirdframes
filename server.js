@@ -25,6 +25,7 @@ app.all(`/${process.env.BOT_ENDPOINT}`, function(req, res){
       res.sendStatus(500);
     }
     else{
+      console.log("Tweet Sent!");
       res.sendStatus(200);
     }
   });
