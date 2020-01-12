@@ -31,6 +31,15 @@ app.all(`/${process.env.BOT_ENDPOINT}`, function(req, res){
   });
 });
 
+function getDMs()
+{
+  T.get('direct_messages/events/list', { count: 10 }, function(err, data, response)
+  {
+    console.log(response);
+  });
+}
+//getDMs();
+
 var listener = app.listen(process.env.PORT, function(){
   console.log('Your bot is running on port ' + listener.address().port);
 });
