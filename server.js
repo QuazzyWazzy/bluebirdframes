@@ -39,6 +39,7 @@ function getDMs()
   });
 }
 //getDMs(); 
+// test push this
 
 var listener = app.listen(process.env.PORT, function(){
   console.log('Your bot is running on port ' + listener.address().port);
