@@ -1,14 +1,17 @@
 {
-	"name": "glitch-twitterbot",
+	"name": "kyoanibot",
 	"version": "0.0.1",
 	"description": "Beep beep tweet!",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "node server.js",
+		"test": "nodemon server.js"
 	},
 	"dependencies": {
-		"twit": "^2.1.0",
-		"express": "^4.14.0"
+		"express": "^4.14.0",
+		"node-schedule": "^1.3.2",
+		"request": "^2.88.0",
+		"twit": "^2.1.0"
 	},
 	"engines": {
 		"node": "8.x"
@@ -24,5 +27,9 @@
 		"twitter",
 		"twitterbot",
 		"bot"
-	]
+	],
+	"devDependencies": {
+		"dotenv": "^8.2.0",
+		"nodemon": "^2.0.2"
+	}
 }

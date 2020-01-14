@@ -1,46 +1,67 @@
-/* Setting things up. */
-var express = require('express'),
-    app = express(),   
-    Twit = require('twit'),
-    config = {
-    /* Be sure to update the .env file with your API keys. See how to get them: https://botwiki.org/tutorials/how-to-create-a-twitter-app */      
-      twitter: {
-        consumer_key: process.env.CONSUMER_KEY,
-        consumer_secret: process.env.CONSUMER_SECRET,
-        access_token: process.env.ACCESS_TOKEN,
-        access_token_secret: process.env.ACCESS_TOKEN_SECRET
-      }
-    },
-    T = new Twit(config.twitter);
+require("dotenv").config();
 
-app.use(express.static('public'));
-
-/* You can use cron-job.org, uptimerobot.com, or a similar site to hit your /BOT_ENDPOINT to wake up your app and make your Twitter bot tweet. */
-
-app.all(`/${process.env.BOT_ENDPOINT}`, function(req, res){
-  /* The example below tweets out "Hello world!". */
-  T.post('statuses/update', { status: 'hello world 👋' }, function(err, data, response) {
-    if (err){
-      console.log('error!', err);
-      res.sendStatus(500);
+var express = require("express"),
+  app = express(),
+  schedule = require("node-schedule"),
+  request = require("request"),
+  Twit = require("twit"),
+  config = {
+    twitter: {
+      consumer_key: process.env.CONSUMER_KEY,
+      consumer_secret: process.env.CONSUMER_SECRET,
+      access_token: process.env.ACCESS_TOKEN,
+      access_token_secret: process.env.ACCESS_TOKEN_SECRET
     }
-    else{
-      console.log("Tweet Sent!");
-      res.sendStatus(200);
-    }
-  });
+  },
+  T = new Twit(config.twitter);
+
+app.use(express.static("public"));
+
+var listener = app.listen(process.env.PORT, function () {
+  console.log("Your bot is running on port " + listener.address().port);
 });
 
-function getDMs()
-{
-  T.get('direct_messages/events/list', { count: 10 }, function(err, data, response)
-  {
-    console.log(response);
+// Upload new frame every 2 hours
+var job = schedule.scheduleJob("0 */2 * * *", function (fireDate) {
+  console.log(`Job Fired at ${fireDate}`)
+  update();
+});
+
+function update() {
+  T.get("statuses/user_timeline", { screen_name: process.env.BOT_SCREEN_NAME }, function (error, data, response) {
+    if (!error && response.statusCode == 200) {
+      if (data.length < 1) {
+        postFrame(1);
+      } else {
+        var tweet = data[0];
+        var lastFrame = parseInt(tweet.text.match(/[0-9]+/)[0]);
+        if (lastFrame.toString() == process.env.TOTAL_FRAMES)
+          return;
+        postFrame(lastFrame + 1);
+      }
+    }
   });
 }
-//getDMs(); 
-//test push this
 
-var listener = app.listen(process.env.PORT, function(){
-  console.log('Your bot is running on port ' + listener.address().port);
-});
+function postFrame(n) {
+  console.log(`Requesting Frame ${n}`);
+  request.get(`${process.env.ASSETS_ENDPOINT}/assets/frame-${n}.jpg`, { encoding: null }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var img = body.toString("base64");
+      console.log("Image Acquired");
+      T.post("media/upload", { media_data: img }, function (error, data, response) {
+        if (!error && response.statusCode == 200) {
+          console.log("Image Uploaded");
+          var s = {
+            status: `Key Frame ${n} / ${process.env.TOTAL_FRAMES}\n#LizToAoiTori #LizAndTheBlueBird`,
+            media_ids: data.media_id_string
+          }
+          T.post("statuses/update", s, function (error, data, response) {
+            if (!error && response.statusCode == 200)
+              console.log(`${s.status} posted`);
+          });
+        }
+      });
+    }
+  });
+}
