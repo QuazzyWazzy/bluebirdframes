@@ -1,7 +1,6 @@
 require("dotenv").config();
 
-var express = require("express"),
-  app = express(),
+var server = require('express')(),
   schedule = require("node-schedule"),
   request = require("request"),
   Twit = require("twit"),
@@ -15,11 +14,12 @@ var express = require("express"),
   },
   T = new Twit(config.twitter);
 
-app.use(express.static("public"));
-
-var listener = app.listen(process.env.PORT, function () {
-  console.log("Your bot is running on port " + listener.address().port);
+server.get('/', function (req, res) {
+  res.send("Stay Alive");
 });
+
+var listener = server.listen(process.env.PORT);
+console.log(`Bot running on port ${listener.address().port}`);
 
 // Upload new frame every 2 hours
 var job = schedule.scheduleJob("0 */2 * * *", function (fireDate) {
