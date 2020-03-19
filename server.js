@@ -53,7 +53,7 @@ function postFrame(n) {
         if (!error && response.statusCode == 200) {
           console.log("Image Uploaded");
           var s = {
-            status: `Key Frame ${n} / ${process.env.TOTAL_FRAMES}\n#LizToAoiTori #LizAndTheBlueBird`,
+            status: `Key Frame ${n} / ${process.env.TOTAL_FRAMES}\n#LizToAoiTori #リズと青い鳥`,
             media_ids: data.media_id_string
           }
           T.post("statuses/update", s, function (error, data, response) {
